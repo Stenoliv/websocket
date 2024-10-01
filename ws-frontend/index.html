@@ -4,19 +4,32 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Demo</title>
+    <title>WebSocket Pastebin</title>
 
 </head>
 
 <!-- Works with ws-node in this repo -->
     
 <body>
-    <input id="in" type="text" placeholder="Write to convert to upper case">
-    <p id="out">...</p>
-    <p id="err" style="color: red;"></p>
-
+    <div id="maincont">
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <p>Paste your pasteble</p>
+                <input id="in" type="text" placeholder="Paste here">
+            </div>
+            <div>
+                <p>Set your token</p>
+                <input id="token" type="text" placeholder="Token">
+            </div>
+        </div>
+        <div>
+            <p id="out"></p>
+            <p id="conn-status"></p>
+        </div>
+        <p id="err" style="color: red;"></p>
+    </div>
     <script>
-        WS_TOKEN = localStorage.getItem('ws_token') || 'my-secret-token';
+        WS_TOKEN = localStorage.getItem('ws_token') || 'secrit-tokin';
         console.log(WS_TOKEN);
 
         // Create a WebSocket connection
@@ -29,16 +42,16 @@
 
         // Message listener
         socket.onmessage = function (event) {
+            
             console.log('Received message:', event.data);
             const data = JSON.parse(event.data);
-
-            if (data.status == 0) {
+            if (data.conns != undefined)document.querySelector("#conn-status").innerHTML = "Clip sent to " + data.conns + " others";
+            else if (data.status == 0) {
                 document.querySelector('#out').innerHTML = data.msg;
                 document.querySelector('#err').innerHTML = '';
             } else {
                 document.querySelector('#err').innerHTML = data.msg;
             }
-            
         };
 
         // Connection closed 
